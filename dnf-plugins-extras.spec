@@ -1,419 +1,332 @@
-%{!?dnf_lowest_compatible: %global dnf_lowest_compatible 1.1.2}
-%{!?dnf_not_compatible: %global dnf_not_compatible 2.0}
+%global _summary %{expand:%{1} Plugin for DNF}
+%global _description %{expand:%{summary}. %{1}.}
+
+%{!?dnf_lowest_compatible: %global dnf_lowest_compatible 2.0}
+%{!?dnf_not_compatible: %global dnf_not_compatible 3.0}
 
 %bcond_with py3_kickstart
 
 Name:           dnf-plugins-extras
-Version:        0.0.12
+Version:        0.10
 Release:        1%{?dist}
 Summary:        Extras Plugins for DNF
 License:        GPLv2+
-URL:            https://github.com/rpm-software-management/dnf-plugins-extras
+URL:            https://github.com/rpm-software-management/%{name}
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
+
 BuildRequires:  cmake
 BuildRequires:  gettext
-# py2
-%if 0%{?fedora} < 23
-BuildRequires:  python-dnf >= %{dnf_lowest_compatible}
-BuildRequires:  python-dnf < %{dnf_not_compatible}
-%else
+
+BuildRequires:  python2-devel
 BuildRequires:  python2-dnf >= %{dnf_lowest_compatible}
 BuildRequires:  python2-dnf < %{dnf_not_compatible}
-%endif
 BuildRequires:  python2-nose
-BuildRequires:  python-sphinx
-BuildRequires:  python2-devel
-%if 0%{?fedora} >= 23
-BuildRequires:  python-kickstart
-%else
-BuildRequires:  pykickstart
-%endif
-# py3
+BuildRequires:  python2-sphinx
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-dnf >= %{dnf_lowest_compatible}
 BuildRequires:  python3-dnf < %{dnf_not_compatible}
 BuildRequires:  python3-nose
 BuildRequires:  python3-sphinx
-%if 0%{?fedora} >= 23
-BuildRequires:  python3-kickstart
-%endif
 
 %description
-Extras Plugins for DNF.
+%{summary}.
 
-%package -n python-dnf-plugins-extras-common
-Summary:        Common files for Extras Plugins for DNF
-%if 0%{?fedora} < 23
-Requires:       python-dnf >= %{dnf_lowest_compatible}
-Requires:       python-dnf < %{dnf_not_compatible}
-Provides:       dnf-plugins-extras-common = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-common <= 0.0.4-2
-Obsoletes:      dnf-plugins-extras < 0.0.6-3
-%else
+%package common
+Summary:        Common files for %{name} subpackages
+Obsoletes:      %{name} < 0.10
+
+%description common
+%{summary}.
+
+%package -n python2-%{name}-common
+Summary:        Common files for python2-%{name} subpackages
+%{?python_provide:%python_provide python2-%{name}-common}
 Requires:       python2-dnf >= %{dnf_lowest_compatible}
 Requires:       python2-dnf < %{dnf_not_compatible}
-%endif
-Obsoletes:      python-dnf-plugins-extras < 0.0.6-3
 
-%description -n python-dnf-plugins-extras-common
-Common files for Extras Plugins, Python 2 version.
+%description -n python2-%{name}-common
+%{summary}.
 
-%package -n python3-dnf-plugins-extras-common
-Summary:        Common files for Extras Plugins for DNF
+%package -n python3-%{name}-common
+Summary:        Common files for python3-%{name} subpackages
+%{?python_provide:%python_provide python3-%{name}-common}
 Requires:       python3-dnf >= %{dnf_lowest_compatible}
 Requires:       python3-dnf < %{dnf_not_compatible}
-%if 0%{?fedora} >= 23
-Provides:       dnf-plugins-extras-common = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-common <= 0.0.4-2
-Obsoletes:      dnf-plugins-extras < 0.0.6-3
-%endif
-Obsoletes:      python3-dnf-plugins-extras < 0.0.6-3
 
-%description -n python3-dnf-plugins-extras-common
-Common files for Extras Plugins for DNF, Python 3 version.
+%description -n python3-%{name}-common
+%{summary}.
 
-%package -n python-dnf-plugins-extras-debug
-Summary:        Debug Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} < 23
+%package -n python2-%{name}-debug
+Summary:        %{_summary Debug}
+Requires:       python2-%{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-debug}
+
+%description -n python2-%{name}-debug
+%{_description Writes system RPM configuration to a dump file and restores it.}
+
+%package -n python3-%{name}-debug
+Summary:        %{_summary Debug}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-debug}
 Provides:       dnf-command(debug-dump)
 Provides:       dnf-command(debug-restore)
-Provides:       dnf-plugins-extras-debug = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-debug <= 0.0.4-2
-%endif
+Provides:       %{name}-debug = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python-dnf-plugins-extras-debug
-Debug Plugin for DNF, Python 2 version. Writes system RPM configuration to a dump file
-and restores it.
+%description -n python3-%{name}-debug
+%{_description Writes system RPM configuration to a dump file and restores it.}
 
-%package -n python3-dnf-plugins-extras-debug
-Summary:	Debug Plugin for DNF
-Requires:	python3-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-command(debug-dump)
-Provides:       dnf-command(debug-restore)
-Provides:       dnf-plugins-extras-debug = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-debug <= 0.0.4-2
-%endif
 
-%description -n python3-dnf-plugins-extras-debug
-Debug Plugin for DNF, Python 3 version. Writes system RPM configuration to
-a dump file and restores it.
+%package -n python2-%{name}-leaves
+Summary:        %{_summary Leaves}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-leaves}
 
-%package -n python-dnf-plugins-extras-leaves
-Summary:        Leaves Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} < 23
+%description -n python2-%{name}-leaves
+%{_description List all installed packages not required by any other installed package.}
+
+%package -n python3-%{name}-leaves
+Summary:        %{_summary Leaves}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-leaves}
 Provides:       dnf-command(leaves)
-Provides:       dnf-plugins-extras-leaves = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-leaves <= 0.0.4-2
-Obsoletes:      dnf-plugins-extras-orphans < 0.0.6-3
-Obsoletes:      python-dnf-plugins-extras-orphans < 0.0.6-3
-%endif
+Provides:       %{name}-leaves = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python-dnf-plugins-extras-leaves
-Leaves Plugin for DNF, Python 2 version. List all installed packages
-not required by any other installed package.
+%description -n python3-%{name}-leaves
+%{_description List all installed packages not required by any other installed package.}
 
-%package -n python3-dnf-plugins-extras-leaves
-Summary:        Leaves Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-command(leaves)
-Provides:       dnf-plugins-extras-leaves = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-leaves <= 0.0.4-2
-Obsoletes:      dnf-plugins-extras-orphans < 0.0.6-3
-Obsoletes:      python3-dnf-plugins-extras-orphans < 0.0.6-3
-%endif
 
-%description -n python3-dnf-plugins-extras-leaves
-Leaves Plugin for DNF, Python 3 version. List all installed packages
-not required by any other installed package.
+%package -n python2-%{name}-local
+Summary:        %{_summary Local}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-local}
 
-%package -n python-dnf-plugins-extras-local
-Summary:        Local Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-Requires:       /usr/bin/createrepo_c
-%if 0%{?fedora} < 23
-Provides:       dnf-plugins-extras-local = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-local <= 0.0.4-2
-%endif
+%description -n python2-%{name}-local
+%{_description Automatically copy all downloaded packages to a repository on the local filesystem and generating repo metadata.}
 
-%description -n python-dnf-plugins-extras-local
-Local Plugin for DNF, Python 2 version. Automatically copy all downloaded packages to a
-repository on the local filesystem and generating repo metadata.
+%package -n python3-%{name}-local
+Summary:        %{_summary Local}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-local}
+Provides:       dnf-command(local)
+Provides:       %{name}-local = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%package -n python3-dnf-plugins-extras-local
-Summary:        Local Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-Requires:       /usr/bin/createrepo_c
-%if 0%{?fedora} >= 23
-Provides:       dnf-plugins-extras-local = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-local <= 0.0.4-2
-%endif
+%description -n python3-%{name}-local
+%{_description Automatically copy all downloaded packages to a repository on the local filesystem and generating repo metadata.}
 
-%description -n python3-dnf-plugins-extras-local
-Local Plugin for DNF, Python 3 version. Automatically copy all downloaded
-packages to a repository on the local filesystem and generating repo metadata.
 
-%package -n python-dnf-plugins-extras-migrate
-Summary:        Migrate Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-Requires:       yum
-%if 0%{?fedora} < 23
-Requires:       python-dnf >= %{dnf_lowest_compatible}
-Provides:       dnf-command(migrate)
-Provides:       dnf-plugins-extras-migrate = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-migrate <= 0.0.4-2
-%else
-Requires:       python2-dnf >= %{dnf_lowest_compatible}
-%endif
+%package -n python2-%{name}-migrate
+Summary:        %{_summary Migrate}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-migrate}
 
-%description -n python-dnf-plugins-extras-migrate
-Migrate Plugin for DNF, Python 2 version. igrates yum's history, group and
-yumdb data to dnf.
+%description -n python2-%{name}-migrate
+%{_description Migrates yum's history, group and yumdb data to dnf.}
 
-%package -n python-dnf-plugins-extras-kickstart
-Summary:        Kickstart Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-Conflicts:      python-dnf-plugins-core <= 0.1.12
-%if 0%{?fedora} >= 23
-BuildRequires:  python-kickstart
-%else
-BuildRequires:  pykickstart
-%endif
-%if 0%{?fedora} < 23
-Provides:       dnf-command(kickstart)
-Provides:       dnf-plugins-extras-kickstart = %{version}-%{release}
-%endif
-%if 0%{?fedora} >= 23
-%if %{without py3_kickstart}
-Provides:       dnf-command(kickstart)
-Provides:       dnf-plugins-extras-kickstart = %{version}-%{release}
-%endif
-%endif
 
-%description -n python-dnf-plugins-extras-kickstart
-Kickstart Plugin for DNF, Python 2 version. Install packages listed in a
-Kickstart file.
+%package -n python2-%{name}-kickstart
+Summary:        %{_summary Kickstart}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-kickstart}
 
-%if %{with py3_kickstart}
-%if 0%{?fedora} >= 23
-%package -n python3-dnf-plugins-extras-kickstart
-Summary:        Kickstart Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
+%description -n python2-%{name}-kickstart
+%{_description Install packages listed in a Kickstart file.}
+
+%package -n python3-%{name}-kickstart
+Summary:        %{_summary Kickstart}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-kickstart}
 Requires:       python3-kickstart
-Conflicts:      python3-dnf-plugins-core <= 0.1.12
 Provides:       dnf-command(kickstart)
-Provides:       dnf-plugins-extras-kickstart = %{version}-%{release}
+Provides:       %{name}-kickstart = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python3-dnf-plugins-extras-kickstart
-Kickstart Plugin for DNF, Python 3 version. Install packages listed in a
-Kickstart file.
+%description -n python3-%{name}-kickstart
+%{_description Install packages listed in a Kickstart file.}
 
-%endif
-%endif
 
-%package -n python-dnf-plugins-extras-repoclosure
-Summary:        RepoClosure Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} < 23
+%package -n python2-%{name}-repoclosure
+Summary:        %{_summary Repoclosure}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-repoclosure}
+
+%description -n python2-%{name}-repoclosure
+%{_description Display a list of unresolved dependencies for repositories.}
+
+%package -n python3-%{name}-repoclosure
+Summary:        %{_summary Repoclosure}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-repoclosure}
 Provides:       dnf-command(repoclosure)
-Provides:       dnf-plugins-extras-repoclosure = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-repoclosure <= 0.0.4-2
-%endif
+Provides:       %{name}-repoclosure = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python-dnf-plugins-extras-repoclosure
-RepoClosure Plugin for DNF, Python 2 version. Display a list of unresolved dependencies for
-repositories.
+%description -n python3-%{name}-repoclosure
+%{_description Display a list of unresolved dependencies for repositories.}
 
-%package -n python3-dnf-plugins-extras-repoclosure
-Summary:        RepoClosure Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-command(repoclosure)
-Provides:       dnf-plugins-extras-repoclosure = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-repoclosure <= 0.0.4-2
-%endif
 
-%description -n python3-dnf-plugins-extras-repoclosure
-RepoClosure Plugin for DNF, Python 3 version. Display a list of unresolved
-dependencies for repositories.
+%package -n python2-%{name}-repograph
+Summary:        %{_summary Repograph}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-repograph}
 
-%package -n python-dnf-plugins-extras-repograph
-Summary:        RepoGraph Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} < 23
+%description -n python2-%{name}-repograph
+%{_description Output a full package dependency graph in dot format.}
+
+%package -n python3-%{name}-repograph
+Summary:        %{_summary Repograph}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-repograph}
 Provides:       dnf-command(repograph)
-Provides:       dnf-plugins-extras-repograph = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-repograph <= 0.0.4-2
-%endif
+Provides:       %{name}-repograph = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python-dnf-plugins-extras-repograph
-RepoGraph Plugin for DNF, Python 2 version. Output a full package dependency graph in dot format.
+%description -n python3-%{name}-repograph
+%{_description Output a full package dependency graph in dot format.}
 
-%package -n python3-dnf-plugins-extras-repograph
-Summary:        RepoGraph Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-command(repograph)
-Provides:       dnf-plugins-extras-repograph = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-repograph <= 0.0.4-2
-%endif
 
-%description -n python3-dnf-plugins-extras-repograph
-RepoGraph Plugin for DNF, Python 3 version. Output a full package dependency
-graph in dot format.
+%package -n python2-%{name}-repomanage
+Summary:        %{_summary Repomanage}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-repomanage}
 
-%package -n python-dnf-plugins-extras-repomanage
-Summary:        RepoManage Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} < 23
+%description -n python2-%{name}-repomanage
+%{_description Manage a directory of rpm packages.}
+
+%package -n python3-%{name}-repomanage
+Summary:        %{_summary Repomanage}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-repomanage}
 Provides:       dnf-command(repomanage)
-Provides:       dnf-plugins-extras-repomanage = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-repomanage <= 0.0.4-2
-%endif
+Provides:       %{name}-repomanage = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python-dnf-plugins-extras-repomanage
-RepoManage Plugin for DNF, Python 2 version. Manage a directory of rpm packages.
+%description -n python3-%{name}-repomanage
+%{_description Manage a directory of rpm packages.}
 
-%package -n python3-dnf-plugins-extras-repomanage
-Summary:        RepoManage Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-command(repomanage)
-Provides:       dnf-plugins-extras-repomanage = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-repomanage <= 0.0.4-2
-%endif
 
-%description -n python3-dnf-plugins-extras-repomanage
-RepoManage Plugin for DNF, Python 3 version. Manage a directory of rpm packages.
+%package -n python3-%{name}-rpmconf
+Summary:        %{_summary RpmConf}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-rpmconf}
+Provides:       dnf-command(rpmconf)
+Provides:       %{name}-rpmconf = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%package -n python3-dnf-plugins-extras-rpmconf
-Summary:        RpmConf Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-Requires:       python3-rpmconf
-%if 0%{?fedora} >= 23
-Provides:       dnf-plugins-extras-rpmconf = %{version}-%{release}
-%endif
+%description -n python3-%{name}-rpmconf
+%{_description Handles .rpmnew, .rpmsave every transaction.}
 
-%description -n python3-dnf-plugins-extras-rpmconf
-RpmConf Plugin for DNF, Python 3 version. Handles .rpmnew, .rpmsave every
-transaction.
 
-%package -n python-dnf-plugins-extras-show-leaves
-Summary:        Leaves Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-Requires:       python-dnf-plugins-extras-leaves = %{version}-%{release}
-%if 0%{?fedora} < 23
-Provides:       dnf-plugins-extras-show-leaves = %{version}-%{release}
-%endif
+%package -n python2-%{name}-show-leaves
+Summary:        %{_summary Leaves}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+Requires:       python2-%{name}-leaves = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-show-leaves}
 
-%description -n python-dnf-plugins-extras-show-leaves
-Show-leaves Plugin for DNF, Python 2 version. List all installed
-packages that are no longer required by any other installed package
-after a transaction.
+%description -n python2-%{name}-show-leaves
+%{_description List all installed packages that are no longer required by any other installed package after a transaction.}
 
-%package -n python3-dnf-plugins-extras-show-leaves
-Summary:        Show-leaves Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-Requires:       python3-dnf-plugins-extras-leaves = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-plugins-extras-show-leaves = %{version}-%{release}
-%endif
+%package -n python3-%{name}-show-leaves
+Summary:        %{_summary Leaves}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+Requires:       python3-%{name}-leaves = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-show-leaves}
+Provides:       dnf-command(show-leaves)
+Provides:       %{name}-show-leaves = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python3-dnf-plugins-extras-show-leaves
-Show-leaves Plugin for DNF, Python 3 version. List all installed
-packages that are no longer required by any other installed package
-after a transaction.
+%description -n python3-%{name}-show-leaves
+%{_description List all installed packages that are no longer required by any other installed package after a transaction.}
 
-%package -n python-dnf-plugins-extras-snapper
-Summary:        Snapper Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
+
+%package -n python2-%{name}-snapper
+Summary:        %{_summary Repomanage}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
 Requires:       dbus-python
 Requires:       snapper
-%if 0%{?fedora} < 23
-Provides:       dnf-plugins-extras-snapper = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-snapper <= 0.0.4-2
-%endif
+%{?python_provide:%python_provide python2-%{name}-snapper}
 
-%description -n python-dnf-plugins-extras-snapper
-Snapper Plugin for DNF, Python 2 version. Creates snapshot every transaction.
+%description -n python2-%{name}-snapper
+%{_description Creates snapshot every transaction.}
 
-%package -n python3-dnf-plugins-extras-snapper
-Summary:        Snapper Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
+%package -n python3-%{name}-snapper
+Summary:        %{_summary Repomanage}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
 Requires:       python3-dbus
 Requires:       snapper
-%if 0%{?fedora} >= 23
-Provides:       dnf-plugins-extras-snapper = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-snapper <= 0.0.4-2
-%endif
+%{?python_provide:%python_provide python3-%{name}-snapper}
+Provides:       dnf-command(snapper)
+Provides:       %{name}-snapper = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python3-dnf-plugins-extras-snapper
-Snapper Plugin for DNF, Python 3 version. Creates snapshot every transaction.
+%description -n python3-%{name}-snapper
+%{_description Creates snapshot every transaction.}
 
-%package -n python-dnf-plugins-extras-tracer
-Summary:        Tracer Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
+
+%package -n python2-%{name}-tracer
+Summary:        %{_summary Tracer}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
 Requires:       tracer
-%if 0%{?fedora} < 23
-Obsoletes:      dnf-plugin-tracer < 0.5.6-2
-Provides:       dnf-command(tracer)
-Provides:       dnf-plugin-tracer = 1:%{version}-%{release}
-Provides:       dnf-plugins-extras-tracer = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-tracer <= 0.0.4-2
-%endif
+%{?python_provide:%python_provide python2-%{name}-tracer}
 
-%description -n python-dnf-plugins-extras-tracer
-Tracer Plugin for DNF, Python 2 version. Finds outdated running applications in your system
-every transaction.
+%description -n python2-%{name}-tracer
+%{_description Finds outdated running applications in your system every transaction.}
 
-%package -n python3-dnf-plugins-extras-tracer
-Summary:        Tracer Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
+%package -n python3-%{name}-tracer
+Summary:        %{_summary Tracer}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
 Requires:       tracer
-%if 0%{?fedora} >= 23
-Obsoletes:      dnf-plugin-tracer < 0.5.6-2
+%{?python_provide:%python_provide python3-%{name}-tracer}
 Provides:       dnf-command(tracer)
-Provides:       dnf-plugin-tracer = 1:%{version}-%{release}
-Provides:       dnf-plugins-extras-tracer = %{version}-%{release}
-Obsoletes:      dnf-plugins-extras-tracer <= 0.0.4-2
-%endif
+Provides:       %{name}-tracer = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python3-dnf-plugins-extras-tracer
-Tracer Plugin for DNF, Python 3 version. Finds outdated running applications in
-your system every transaction.
+%description -n python3-%{name}-tracer
+%{_description Finds outdated running applications in your system every transaction.}
 
-%package -n python-dnf-plugins-extras-versionlock
-Summary:        Versionlock Plugin for DNF
-Requires:       python-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} < 23
+
+%package -n python2-%{name}-versionlock
+Summary:        %{_summary Versionlock}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-versionlock}
+
+%description -n python2-%{name}-versionlock
+%{_description Versionlock plugin takes a set of name/versions for packages and excludes all other versions of those packages. This allows you to e.g. protect packages from being updated by newer versions.}
+
+%package -n python3-%{name}-versionlock
+Summary:        %{_summary Versionlock}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-versionlock}
 Provides:       dnf-command(versionlock)
-Provides:       dnf-plugin-versionlock = 1:%{version}-%{release}
-Provides:       dnf-plugins-extras-versionlock = %{version}-%{release}
-%endif
+Provides:       %{name}-versionlock = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python-dnf-plugins-extras-versionlock
-Versionlock plugin takes a set of name/versions for packages and excludes all other
-versions of those packages. This allows you to e.g. protect packages from being
-updated by newer versions.
+%description -n python3-%{name}-versionlock
+%{_description Versionlock plugin takes a set of name/versions for packages and excludes all other versions of those packages. This allows you to e.g. protect packages from being updated by newer versions.}
 
-%package -n python3-dnf-plugins-extras-versionlock
-Summary:        Versionlock Plugin for DNF
-Requires:       python3-dnf-plugins-extras-common = %{version}-%{release}
-%if 0%{?fedora} >= 23
-Provides:       dnf-command(versionlock)
-Provides:       dnf-plugin-versionlock = 1:%{version}-%{release}
-Provides:       dnf-plugins-extras-versionlock = %{version}-%{release}
-%endif
 
-%description -n python3-dnf-plugins-extras-versionlock
-Versionlock plugin takes a set of name/versions for packages and excludes all other
-versions of those packages. This allows you to e.g. protect packages from being
-updated by newer versions.
+%package -n python2-%{name}-system-upgrade
+Summary:        %{_summary System Upgrade}
+Requires:       python2-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python2-%{name}-system-upgrade}
+
+%description -n python2-%{name}-system-upgrade
+%{_description This package provides the "system-upgrade" command.}
+
+%package -n python3-%{name}-system-upgrade
+Summary:        %{_summary System Upgrade}
+Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{release}
+%{?python_provide:%python_provide python3-%{name}-system-upgrade}
+Provides:       dnf-command(system-upgrade)
+Provides:       %{name}-system-upgrade = %{?epoch:%{epoch}:}%{version}-%{release}
+
+Provides:   fedup = %{?epoch:%{epoch}}%{version}-%{release}
+Obsoletes:  fedup < 0.10
+Obsoletes:  fedup-dracut
+
+Obsoletes:  dnf-plugin-system-upgrade < 0.10
+Obsoletes:  python3-dnf-plugin-system-upgrade < 0.10
+Conflicts:  PackageKit < 1.0.8
+
+BuildRequires:  python3-systemd
+Requires:       python3-systemd
+
+%description -n python3-%{name}-system-upgrade
+%{_description This package provides the "system-upgrade" command.}
+
 
 %prep
 %autosetup
@@ -441,122 +354,117 @@ popd
 
 %find_lang %{name}
 
-%if %{without py3_kickstart}
-rm -rf %{buildroot}%{python3_sitelib}/dnf-plugins/kickstart.*
-rm -rf %{buildroot}%{python3_sitelib}/dnf-plugins/__pycache__/kickstart.*
-%endif
-
 %check
 PYTHONPATH="%{buildroot}%{python2_sitelib}:%{buildroot}%{python2_sitelib}/dnf-plugins/" nosetests-%{python2_version} -s tests/
 PYTHONPATH="%{buildroot}%{python3_sitelib}:%{buildroot}%{python3_sitelib}/dnf-plugins/" nosetests-%{python3_version} -s tests/
 
-%files
+%files common -f %{name}.lang
+%license COPYING
+%doc README.rst
 %{_mandir}/man8/dnf.plugin.*
 
-%files -n python-dnf-plugins-extras-common -f %{name}.lang
-%license COPYING
-%doc AUTHORS README.rst
+%files -n python2-%{name}-common
 %{python2_sitelib}/dnfpluginsextras/
 
-%files -n python3-dnf-plugins-extras-common -f %{name}.lang
-%license COPYING
-%doc AUTHORS README.rst
+%files -n python3-%{name}-common
 %{python3_sitelib}/dnfpluginsextras/
-%dir %{python3_sitelib}/dnf-plugins/__pycache__/
 
-%files -n python-dnf-plugins-extras-debug
+%files -n python2-%{name}-debug
 %{python2_sitelib}/dnf-plugins/debug.*
 
-%files -n python3-dnf-plugins-extras-debug
-%{python3_sitelib}/dnf-plugins/debug.*
+%files -n python3-%{name}-debug
+%{python3_sitelib}/dnf-plugins/debug.py
 %{python3_sitelib}/dnf-plugins/__pycache__/debug.*
 
-%files -n python-dnf-plugins-extras-leaves
+%files -n python2-%{name}-leaves
 %{python2_sitelib}/dnf-plugins/leaves.*
 
-%files -n python3-dnf-plugins-extras-leaves
-%{python3_sitelib}/dnf-plugins/leaves.*
+%files -n python3-%{name}-leaves
+%{python3_sitelib}/dnf-plugins/leaves.py
 %{python3_sitelib}/dnf-plugins/__pycache__/leaves.*
 
-%files -n python-dnf-plugins-extras-local
+%files -n python2-%{name}-local
 %config %{_sysconfdir}/dnf/plugins/local.conf
 %{python2_sitelib}/dnf-plugins/local.*
 
-%files -n python3-dnf-plugins-extras-local
+%files -n python3-%{name}-local
 %config %{_sysconfdir}/dnf/plugins/local.conf
-%{python3_sitelib}/dnf-plugins/local.*
+%{python3_sitelib}/dnf-plugins/local.py
 %{python3_sitelib}/dnf-plugins/__pycache__/local.*
 
-%files -n python-dnf-plugins-extras-migrate
+%files -n python2-%{name}-migrate
 %{python2_sitelib}/dnf-plugins/migrate.*
 
-%files -n python-dnf-plugins-extras-kickstart
-%{python2_sitelib}/dnf-plugins/kickstart.*
+%files -n python2-%{name}-kickstart
+%{python2_sitelib}/dnf-plugins/kickstart.py*
 
-%if 0%{?fedora} >= 23
-%if %{with py3_kickstart}
-%files -n python3-dnf-plugins-extras-kickstart
-%{python3_sitelib}/dnf-plugins/kickstart.*
+%files -n python3-%{name}-kickstart
+%{python3_sitelib}/dnf-plugins/kickstart.py
 %{python3_sitelib}/dnf-plugins/__pycache__/kickstart.*
-%endif
-%endif
 
-%files -n python-dnf-plugins-extras-repoclosure
+%files -n python2-%{name}-repoclosure
 %{python2_sitelib}/dnf-plugins/repoclosure.*
 
-%files -n python3-dnf-plugins-extras-repoclosure
-%{python3_sitelib}/dnf-plugins/repoclosure.*
+%files -n python3-%{name}-repoclosure
+%{python3_sitelib}/dnf-plugins/repoclosure.py
 %{python3_sitelib}/dnf-plugins/__pycache__/repoclosure.*
 
-%files -n python-dnf-plugins-extras-repograph
+%files -n python2-%{name}-repograph
 %{python2_sitelib}/dnf-plugins/repograph.*
 
-%files -n python3-dnf-plugins-extras-repograph
-%{python3_sitelib}/dnf-plugins/repograph.*
+%files -n python3-%{name}-repograph
+%{python3_sitelib}/dnf-plugins/repograph.py
 %{python3_sitelib}/dnf-plugins/__pycache__/repograph.*
 
-%files -n python-dnf-plugins-extras-repomanage
+%files -n python2-%{name}-repomanage
 %{python2_sitelib}/dnf-plugins/repomanage.*
 
-%files -n python3-dnf-plugins-extras-repomanage
-%{python3_sitelib}/dnf-plugins/repomanage.*
+%files -n python3-%{name}-repomanage
+%{python3_sitelib}/dnf-plugins/repomanage.py
 %{python3_sitelib}/dnf-plugins/__pycache__/repomanage.*
 
-%files -n python3-dnf-plugins-extras-rpmconf
-%config %{_sysconfdir}/dnf/plugins/rpmconf.conf
-%{python3_sitelib}/dnf-plugins/rpm_conf.*
+%files -n python3-%{name}-rpmconf
+%config(noreplace) %{_sysconfdir}/dnf/plugins/rpmconf.conf
+%{python3_sitelib}/dnf-plugins/rpm_conf.py
 %{python3_sitelib}/dnf-plugins/__pycache__/rpm_conf.*
 
-%files -n python-dnf-plugins-extras-show-leaves
+%files -n python2-%{name}-show-leaves
 %{python2_sitelib}/dnf-plugins/show_leaves.*
 
-%files -n python3-dnf-plugins-extras-show-leaves
-%{python3_sitelib}/dnf-plugins/show_leaves.*
+%files -n python3-%{name}-show-leaves
+%{python3_sitelib}/dnf-plugins/show_leaves.py
 %{python3_sitelib}/dnf-plugins/__pycache__/show_leaves.*
 
-%files -n python-dnf-plugins-extras-snapper
+%files -n python2-%{name}-snapper
 %{python2_sitelib}/dnf-plugins/snapper.*
 
-%files -n python3-dnf-plugins-extras-snapper
-%{python3_sitelib}/dnf-plugins/snapper.*
+%files -n python3-%{name}-snapper
+%{python3_sitelib}/dnf-plugins/snapper.py
 %{python3_sitelib}/dnf-plugins/__pycache__/snapper.*
 
-%files -n python-dnf-plugins-extras-tracer
+%files -n python2-%{name}-tracer
 %{python2_sitelib}/dnf-plugins/tracer.*
 
-%files -n python3-dnf-plugins-extras-tracer
-%{python3_sitelib}/dnf-plugins/tracer.*
+%files -n python3-%{name}-tracer
+%{python3_sitelib}/dnf-plugins/tracer.py
 %{python3_sitelib}/dnf-plugins/__pycache__/tracer.*
 
-%files -n python-dnf-plugins-extras-versionlock
-%config %{_sysconfdir}/dnf/plugins/versionlock.conf
-%config %{_sysconfdir}/dnf/plugins/versionlock.list
+%files -n python2-%{name}-versionlock
+%config(noreplace) %{_sysconfdir}/dnf/plugins/versionlock.conf
+%config(noreplace) %{_sysconfdir}/dnf/plugins/versionlock.list
 %{python2_sitelib}/dnf-plugins/versionlock.*
 
-%files -n python3-dnf-plugins-extras-versionlock
-%config %{_sysconfdir}/dnf/plugins/versionlock.conf
-%config %{_sysconfdir}/dnf/plugins/versionlock.list
-%{python3_sitelib}/dnf-plugins/versionlock.*
+%files -n python3-%{name}-versionlock
+%config(noreplace) %{_sysconfdir}/dnf/plugins/versionlock.conf
+%config(noreplace) %{_sysconfdir}/dnf/plugins/versionlock.list
+%{python3_sitelib}/dnf-plugins/versionlock.py
 %{python3_sitelib}/dnf-plugins/__pycache__/versionlock.*
+
+%files -n python2-%{name}-system-upgrade
+%{python2_sitelib}/dnf-plugins/system_upgrade.*
+
+%files -n python3-%{name}-system-upgrade
+%{python3_sitelib}/dnf-plugins/system_upgrade.py
+%{python3_sitelib}/dnf-plugins/__pycache__/system_upgrade.*
 
 %changelog
