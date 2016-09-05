@@ -23,7 +23,11 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-dnf >= %{dnf_lowest_compatible}
 BuildRequires:  python2-dnf < %{dnf_not_compatible}
 BuildRequires:  python2-nose
+%if 0%{?fedora} && 0%{?fedora} < 24
+BuildRequires:  python-sphinx
+%else
 BuildRequires:  python2-sphinx
+%endif
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-dnf >= %{dnf_lowest_compatible}
