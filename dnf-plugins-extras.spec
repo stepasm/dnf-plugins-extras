@@ -361,12 +361,17 @@ popd
 
 %find_lang %{name}
 
-
+%check
+PYTHONPATH="%{buildroot}%{python2_sitelib}:%{buildroot}%{python2_sitelib}/dnf-plugins/" nosetests-%{python2_version} -s tests/
+PYTHONPATH="%{buildroot}%{python3_sitelib}:%{buildroot}%{python3_sitelib}/dnf-plugins/" nosetests-%{python3_version} -s tests/
 
 %files common -f %{name}.lang
 %license COPYING
 %doc README.rst
 %{_mandir}/man8/dnf.plugin.*
+%{_unitdir}/dnf-system-upgrade.service
+%dir %{_unitdir}/system-update.target.wants
+%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 
 %files -n python2-%{name}-common
 %{python2_sitelib}/dnfpluginsextras/
@@ -467,15 +472,9 @@ popd
 
 %files -n python2-%{name}-system-upgrade
 %{python2_sitelib}/dnf-plugins/system_upgrade.*
-%{_unitdir}/dnf-system-upgrade.service
-%dir %{_unitdir}/system-update.target.wants
-%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 
 %files -n python3-%{name}-system-upgrade
 %{python3_sitelib}/dnf-plugins/system_upgrade.py
 %{python3_sitelib}/dnf-plugins/__pycache__/system_upgrade.*
-%{_unitdir}/dnf-system-upgrade.service
-%dir %{_unitdir}/system-update.target.wants
-%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 
 %changelog
