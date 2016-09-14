@@ -25,9 +25,18 @@ ADD_SUBDIRECTORY (etc)
 ADD_SUBDIRECTORY (plugins)
 ADD_SUBDIRECTORY (po)
 
-EXECUTE_PROCESS(COMMAND pkg-config systemd --variable systemdsystemunitdir OUTPUT_VARIABLE UNITDIR)
+if(WITH_SYSTEMD)
 
-configure_file(${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service 
-${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service @ONLY)
+    EXECUTE_PROCESS(COMMAND pkg-config systemd --variable systemdsystemunitdir OUTPUT_VARIABLE SYSTEMD_CONFIGURATIONS_FILES_DIR)
 
-install(FILES ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service DESTINATION ${UNITDIR} )
+    configure_file(${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service @ONLY)
+    message( STATUS "Configured systemd unit file dnf-system-upgrade" )
+
+    if(EXISTS ${SYSTEMD_CONFIGURATIONS_FILES_DIR})
+        install(FILES ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service DESTINATION ${SYSTEMD_CONFIGURATIONS_FILES_DIR} )
+        message(STATUS "Unit file will be installed to ${SYSTEMD_CONFIGURATIONS_FILES_DIR} after make install" )
+    else(EXISTS ${SYSTEMD_CONFIGURATIONS_FILES_DIR})
+        message(STATUS "Unit file will not be installed to ${SYSTEMD_CONFIGURATIONS_FILES_DIR} after make install" )
+    endif(EXISTS ${SYSTEMD_CONFIGURATIONS_FILES_DIR})
+
+endif(WITH_SYSTEMD)
