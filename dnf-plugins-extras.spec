@@ -468,9 +468,11 @@ popd
 %{python3_sitelib}/dnf-plugins/__pycache__/versionlock.*
 
 %files -n python2-%{name}-system-upgrade
+%{_unitdir}/dnf-system-upgrade.service
 %{python2_sitelib}/dnf-plugins/system_upgrade.*
 
 %files -n python3-%{name}-system-upgrade
+%{_unitdir}/dnf-system-upgrade.service
 %{python3_sitelib}/dnf-plugins/system_upgrade.py
 %{python3_sitelib}/dnf-plugins/__pycache__/system_upgrade.*
 
