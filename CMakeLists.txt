@@ -18,8 +18,18 @@ EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import sys; sys.stdout.write('%
 MESSAGE(STATUS "Python install dir is ${PYTHON_INSTALL_DIR}")
 
 SET (SYSCONFDIR /etc)
+SET (SYSTEMD_DIR /usr/lib/systemd/system)
 
 ADD_SUBDIRECTORY (doc)
 ADD_SUBDIRECTORY (etc)
 ADD_SUBDIRECTORY (plugins)
 ADD_SUBDIRECTORY (po)
+ENABLE_TESTING()
+ADD_SUBDIRECTORY (tests)
+
+EXECUTE_PROCESS(COMMAND pkg-config systemd --variable systemdsystemunitdir OUTPUT_VARIABLE UNITDIR)
+
+configure_file(${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service 
+${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service @ONLY)
+
+install(FILES ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service DESTINATION ${SYSTEMD_CONFIGURATIONS_FILES_DIR} )
