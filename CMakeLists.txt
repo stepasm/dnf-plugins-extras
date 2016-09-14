@@ -20,12 +20,12 @@ MESSAGE(STATUS "Python install dir is ${PYTHON_INSTALL_DIR}")
 SET (SYSCONFDIR /etc)
 SET (SYSTEMD_DIR /usr/lib/systemd/system)
 SET (TARGET_WANTSDIR ${SYSTEMD_DIR}/system-update.target.wants)
+SET (SERVICE dnf-system-upgrade.service)
 
 ADD_SUBDIRECTORY (doc)
 ADD_SUBDIRECTORY (etc)
 ADD_SUBDIRECTORY (plugins)
 ADD_SUBDIRECTORY (po)
 
-INSTALL (FILES dnf-system-upgrade.service DESTINATION ${SYSTEMD_DIR} )
-create_symlink
+INSTALL (FILES $(SERVICE) DESTINATION ${SYSTEMD_DIR} )
 INSTALL (DIRECTORY DESTINATION ${TARGET_WANTSDIR})
