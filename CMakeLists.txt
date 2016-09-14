@@ -30,4 +30,4 @@ EXECUTE_PROCESS(COMMAND pkg-config systemd --variable systemdsystemunitdir OUTPU
 configure_file(${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service 
 ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service @ONLY)
 
-install(FILES ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service DESTINATION ${SYSTEMD_CONFIGURATIONS_FILES_DIR} )
+install(FILES ${CMAKE_SOURCE_DIR}/dnf-system-upgrade.service DESTINATION ${UNITDIR} )
