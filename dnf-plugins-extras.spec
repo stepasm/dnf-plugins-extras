@@ -369,9 +369,6 @@ popd
 %license COPYING
 %doc README.rst
 %{_mandir}/man8/dnf.plugin.*
-%{_unitdir}/dnf-system-upgrade.service
-%dir %{_unitdir}/system-update.target.wants
-%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 
 %files -n python2-%{name}-common
 %{python2_sitelib}/dnfpluginsextras/
