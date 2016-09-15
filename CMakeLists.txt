@@ -17,6 +17,7 @@ EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from sys import stdout; from di
 EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import sys; sys.stdout.write('%s.%s' % (sys.version_info.major, sys.version_info.minor))" OUTPUT_VARIABLE PYTHON_MAJOR_DOT_MINOR_VERSION)
 MESSAGE(STATUS "Python install dir is ${PYTHON_INSTALL_DIR}")
 
+SET (SYSCONFDIR /etc)
 SET (SYSTEMD_DIR /usr/lib/systemd/system)
 SET (TARGET_WANTSDIR ${SYSTEMD_DIR}/system-update.target.wants)
 SET (SERVICE dnf-system-upgrade.service)
