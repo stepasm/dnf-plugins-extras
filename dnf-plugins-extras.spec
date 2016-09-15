@@ -319,6 +319,7 @@ Requires:       python3-%{name}-common = %{?epoch:%{?epoch}:}%{version}-%{releas
 %{?python_provide:%python_provide python3-%{name}-system-upgrade}
 Provides:       dnf-command(system-upgrade)
 Provides:       %{name}-system-upgrade = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       system-upgrade = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:   fedup = %{?epoch:%{epoch}}%{version}-%{release}
 Obsoletes:  fedup < 0.10
@@ -470,13 +471,13 @@ popd
 %files -n python2-%{name}-system-upgrade
 %{_unitdir}/dnf-system-upgrade.service
 %dir %{_unitdir}/system-update.target.wants
-#%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
+%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 %{python2_sitelib}/dnf-plugins/system_upgrade.*
 
 %files -n python3-%{name}-system-upgrade
 %{_unitdir}/dnf-system-upgrade.service
 %dir %{_unitdir}/system-update.target.wants
-#%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
+%{_unitdir}/system-update.target.wants/dnf-system-upgrade.service
 %{python3_sitelib}/dnf-plugins/system_upgrade.py
 %{python3_sitelib}/dnf-plugins/__pycache__/system_upgrade.*
 
